@@ -86,8 +86,20 @@ exports.updateStore = async (req, res) => {
 };
 
 exports.getStoreBySlug = async (req, res, next) => {
-  //res.send('It works');
   const store = await Store.findOne({ slug: req.params.slug });
   if(!store) return next();
   res.render('store', { store,  title: store.name});
+};
+
+// TAG PAGE FUNCTIONS
+
+exports.getStoresByTag = async (req, res) => {
+  const tag = req.params.tag;
+  const tagQuery = tag || { $exists: true };
+  const tagsPromise =  Store.getTagsList();
+  const storesPromise = Store.find({ tags: tagQuery });
+
+  // Gets the result of both querys to obtein the stores and tags of stores
+  const [tags, stores] = await Promise.all([tagsPromise, storesPromise]);
+  res.render('tags', { tags, title: 'Tags', tag, stores});
 };

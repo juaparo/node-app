@@ -508,6 +508,7 @@ label {
   display: block; }
 
 .form {
+  margin: 20px;
   background: white;
   padding: 2rem;
   box-shadow: linear-gradient(90deg, #48ded4 0%, #a026bf 20%, #e82c75 60%, #FFC40E 85%, #48ded4 95%); }
@@ -790,7 +791,7 @@ label {
             clip-path: polygon(0 0, 100% 0, 100% 90%, 0% 100%); }
 
 .tags {
-  margin: 0;
+  margin-top: 20px;
   padding: 0;
   list-style: none;
   display: -ms-flexbox;
@@ -1105,7 +1106,8 @@ label {
   background: #FFC40E;
   color: #303030;
   font-family: 'Panama';
-  font-weight: 600; }
+  font-weight: 600;
+  margin-top: 20px; }
 
 .avatar {
   min-width: 50px;
