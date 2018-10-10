@@ -49,10 +49,13 @@ exports.resize = async (req, res, next) => {
 };
 
 exports.createStore = async (req, res) => {
+  //get the author
+  req.body.author = req.user._id;
   const store =  await (new Store(req.body)).save();
   await store.save();
   req.flash('success', `Successfully created ${store.name}. Care to leave a review?`);
   res.redirect(`/store/${store.slug}`);
+
 };
 
 
