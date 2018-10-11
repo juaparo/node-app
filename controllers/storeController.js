@@ -65,12 +65,18 @@ exports.getStores = async ( req, res ) => {
   res.render('stores', { title: 'Stores', stores });
 };
 
+//get the author of stores
+const confirmOwner = (store, user) => {
+  if (!store.author.equals(user._id)) {
+    throw Error('You must own a store in order to edit it! ');
+  }
+};
 
 exports.editStore = async (req, res) => {
   //1. Find the store given the ID
   const store =  await Store.findOne({ _id: req.params.id }); 
   //2. confirm they are the owner of the store
-  //TODO
+  confirmOwner(store, req.user);
   //3. Render out the edit form so the user can update their store
   res.render('editStore', {title: `Edit ${store.name}`, store});
 };
@@ -89,7 +95,8 @@ exports.updateStore = async (req, res) => {
 };
 
 exports.getStoreBySlug = async (req, res, next) => {
-  const store = await Store.findOne({ slug: req.params.slug });
+  const store = await Store.findOne({ slug: req.params.slug }).
+  populate('author');
   if(!store) return next();
   res.render('store', { store,  title: store.name});
 };
@@ -105,4 +112,25 @@ exports.getStoresByTag = async (req, res) => {
   // Gets the result of both querys to obtein the stores and tags of stores
   const [tags, stores] = await Promise.all([tagsPromise, storesPromise]);
   res.render('tags', { tags, title: 'Tags', tag, stores});
+};
+
+// API ROUTES
+
+exports.searchStores = async (req, res) => {
+  const stores = await Store
+  //first find  the stores that match
+  .find({
+    $text: { 
+      $search: req.query.q 
+    }
+  },{
+    score: { $meta: 'textScore' }
+  })
+  //Sort the stores
+  .sort({
+    score: { $meta: 'textScore' }
+  })
+  //limit to only 5 results
+  .limit(5)
+  res.json(stores);
 };
