@@ -25,7 +25,7 @@ router.post('/add/:id',
 router.get('/stores/:id/edit', catchErrors(storeController.editStore));
 
 //store by slug - single stores
-router.get('/store/:slug', catchErrors(storeController.getStoreBySlug));
+router.get('/stores/:slug', catchErrors(storeController.getStoreBySlug));
 
 // TAGS PAGE ROUTES
 router.get('/tags', catchErrors(storeController.getStoresByTag));
@@ -58,11 +58,13 @@ router.post('/account/reset/:token',
   catchErrors(authController.update)
 );
 
+router.get('/map', storeController.mapPage);
+
 /*
   API
 */
 
 router.get('/api/search', catchErrors(storeController.searchStores));
-
+router.get('/api/stores/near', catchErrors(storeController.mapStores));
 
 module.exports = router;

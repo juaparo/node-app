@@ -40,11 +40,16 @@ const storeSchema = new mongoose.Schema({
   }
 });
 
-//define indexes
+//DEFINE INDEXES OF THE SCHEMA  
 storeSchema.index({
   name: 'text',
   decription: 'text'
 });
+
+//location index
+storeSchema.index({ 
+  location: '2dsphere'
+ });
 
 storeSchema.pre('save', async function(next){
   if(!this.isModified('name')){
