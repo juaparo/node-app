@@ -2,11 +2,11 @@ import axios from 'axios';
 import { $ } from './bling';
 
 const mapOptions = {
-  center: { lat: 43.2 , lng: -79.8 },
+  center: { lat: 6.2 , lng: -75.6},
   zoom: 10
 };
 
-function loadPlaces (map, lat = 43.2, lng = -79.8) {
+function loadPlaces (map, lat = 6.2, lng = -75.6) {
   axios.get(`/api/stores/near?lat=${lat}&lng=${lng}`)
     .then(res => {
       const places = res.data;
@@ -14,16 +14,36 @@ function loadPlaces (map, lat = 43.2, lng = -79.8) {
         alert('no places found!');
         return;
       }
+      const bounds = new google.maps.LatLngBounds();
+      const infoWindow = new google.maps.InfoWindow();
 
       const markers = places.map(place => {
         const [placeLng, placeLat] = place.location.coordinates;
         const position = { lat: placeLat, lng: placeLng };
+        bounds.extend(position);
         const marker = new google.maps.Marker({ map, position });
         marker.place = place;
         return marker;
       });
-      console.log(markers);
-      
+      //When some click on a marker, show the details of the place
+      markers.forEach(marker => marker.addListener('click', function() {
+        console.log(this.place);
+        
+        const html = `
+          <div class="popup">
+            <a href="/store/${this.place.slug}">
+              <img src="/uploads/${this.place.photo || 'store.png'}" alt="${this.place.name}" />
+              <p>${this.place.name} - ${this.place.location.address}</p>
+            </a>
+          </div>
+        `;
+        infoWindow.setContent(html);
+        infoWindow.open(map, this);
+        
+      }));
+      //then zoom the map to fit all the markers perfectly
+      map.setCenter(bounds.getCenter());
+      map.fitBounds(bounds);
     });
 }
 
@@ -35,7 +55,11 @@ function makeMap(mapDiv){
 
   const input = $('[name="geolocate"]');
   const autocomplete = new google.maps.places.Autocomplete(input);
-  
+  autocomplete.addListener('place_changed', () => {
+    const place = autocomplete.getPlace();
+    loadPlaces(map, place.geometry.location.lat(), place.geometry.location.lng())
+    
+  });
 }
 
 export default makeMap;

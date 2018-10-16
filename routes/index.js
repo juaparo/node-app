@@ -25,7 +25,7 @@ router.post('/add/:id',
 router.get('/stores/:id/edit', catchErrors(storeController.editStore));
 
 //store by slug - single stores
-router.get('/stores/:slug', catchErrors(storeController.getStoreBySlug));
+router.get('/store/:slug', catchErrors(storeController.getStoreBySlug));
 
 // TAGS PAGE ROUTES
 router.get('/tags', catchErrors(storeController.getStoresByTag));
@@ -66,5 +66,8 @@ router.get('/map', storeController.mapPage);
 
 router.get('/api/search', catchErrors(storeController.searchStores));
 router.get('/api/stores/near', catchErrors(storeController.mapStores));
+
+//HEART STORES
+router.post('/api/stores/:id/heart', catchErrors(storeController.heart))
 
 module.exports = router;
