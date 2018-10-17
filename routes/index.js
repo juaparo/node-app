@@ -3,6 +3,7 @@ const router = express.Router();
 const storeController = require('../controllers/storeController');
 const userController = require('../controllers/userController');
 const authController = require('../controllers/authController');
+const reviewController = require('../controllers/reviewController');
 // Error handler
 const { catchErrors } = require('../handlers/errorHandlers');
 
@@ -69,5 +70,12 @@ router.get('/api/stores/near', catchErrors(storeController.mapStores));
 
 //HEART STORES
 router.post('/api/stores/:id/heart', catchErrors(storeController.heart))
+router.get('/hearts', authController.isLoggedIn ,catchErrors(storeController.getHearts));
+
+//REVIEWS ROUTES
+router.post('/reviews/:id', authController.isLoggedIn, catchErrors(reviewController.addReview));
+
+//TOP PAGE ROUTES
+router.get('/top', catchErrors(storeController.getTopStores));
 
 module.exports = router;

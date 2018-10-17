@@ -15,4 +15,4 @@ typeAhead( $('.search') );
 makeMap( $('#map') );
 
 const heartForms = $$('form.heart');
-heartForms.on('submit')
+heartForms.on('submit', ajaxHeart);
