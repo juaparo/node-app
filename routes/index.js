@@ -23,7 +23,7 @@ router.post('/add/:id',
   storeController.upload,
   catchErrors(storeController.resize),
   catchErrors(storeController.updateStore));
-router.get('/stores/:id/edit', catchErrors(storeController.editStore));
+router.get('/store/:id/edit', catchErrors(storeController.editStore));
 
 //store by slug - single stores
 router.get('/store/:slug', catchErrors(storeController.getStoreBySlug));
@@ -77,5 +77,8 @@ router.post('/reviews/:id', authController.isLoggedIn, catchErrors(reviewControl
 
 //TOP PAGE ROUTES
 router.get('/top', catchErrors(storeController.getTopStores));
+
+//STORES PAGINATION
+router.get('/stores/page/:page', catchErrors(storeController.getStores));
 
 module.exports = router;

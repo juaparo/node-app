@@ -60,9 +60,29 @@ exports.createStore = async (req, res) => {
 
 
 exports.getStores = async ( req, res ) => {
+  const page = req.params.page || 1;
+  const limit = 4;
+  const skip = (page * limit) - limit;
   // first query to the database for a list of all stores
-   const stores = await Store.find();
-  res.render('stores', { title: 'Stores', stores });
+  const storesPromise = Store
+    .find()
+    .skip(skip)
+    .limit(limit)
+    .sort({ created: 'desc'});
+
+  const countPromise = Store.count();
+
+  const [stores, count] = await Promise.all([storesPromise, countPromise]);
+
+  const pages = Math.ceil(count / limit);
+  
+  if (!stores.length && skip){
+    req.flash('info', `Hey! You asked for page ${page}. But that doesn't exist. So I put you on page ${pages}`);
+    res.redirect(`/stores/page/${pages}`);
+    return;
+  }
+
+  res.render('stores', { title: 'Stores', stores, page, pages, count });
 };
 
 //get the author of stores
@@ -89,8 +109,8 @@ exports.updateStore = async (req, res) => {
     new: true, // con este parametro se devuelve el dato nuevo en vez del viejo
     runValidators: true
   }).exec();
-  req.flash('success', `Successfully updated <strong>${store.name}</strong>. <a href="/stores/${store.slug}">View Store →</a>`);
-  res.redirect(`/stores/${store._id}/edit`);
+  req.flash('success', `Successfully updated <strong>${store.name}</strong>. <a href="/store/${store.slug}">View Store →</a>`);
+  res.redirect(`/store/${store._id}/edit`);
   // Redirect them the store and tell them it worked
 };
 
@@ -181,8 +201,7 @@ exports.getHearts = async (req, res) => {
 
 exports.getTopStores = async (req, res) => {
   const stores = await Store.getTopStores();
-  res.json(stores);
-  //res.render('topStores', { stores, title: '⭐️ Top Stores!'});
+  res.render('topStores', { stores, title: '⭐️ Top Stores!'});
 }
 
 
